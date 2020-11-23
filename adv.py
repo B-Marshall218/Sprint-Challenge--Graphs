@@ -2,6 +2,8 @@ from room import Room
 from player import Player
 from world import World
 
+from collections import deque
+
 import random
 from ast import literal_eval
 
@@ -62,6 +64,35 @@ while "?" in graph[current_room].values():
         # check which room youve visited
         if len(graph) == 500:
             print("End of the line")
+            break
+
+        # BFS shortest path to unexplored exit
+        queue = deque()
+        visited = set()
+        queue.append([current_room])
+
+        while len(queue) > 0:
+            currPath = queue.popleft()
+            currRoom = currPath[-1]
+
+            if "?" in graph[currRoom].values():
+                break
+            if currRoom not in visited:
+                visited.add(currRoom)
+
+                for e in graph[currRoom]:
+                    newPath = list(currPath)
+                    newPath.append(graph[currRoom][e])
+                    queue.append(newPath)
+
+            # after you hit dead end
+        for i in range(1, len(currPath)):
+            t = [k for k, v in graph[current_room].items() if v ==
+                 currPath[i]][0]
+            player.travel(t)
+            traversal_path.append(t)
+            current_room = player.current_room.id
+
 # TRAVERSAL TEST - DO NOT MODIFY
 visited_rooms = set()
 player.current_room = world.starting_room
